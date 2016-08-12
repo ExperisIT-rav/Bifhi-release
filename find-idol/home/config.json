@@ -1,0 +1,56 @@
+{
+  "login" : {
+    "name" : "CommunityAuthentication",
+    "defaultLogin" : {
+      "username" : null,
+      "password" : null
+    },
+    "community" : {
+      "protocol" : "HTTP",
+      "host" : "localhost",
+      "port" : 9030,
+      "productTypeRegex" : null
+    },
+    "method" : "autonomy"
+  },
+  "content" : {
+    "protocol" : "HTTP",
+    "host" : "localhost",
+    "port" : 9000,
+    "productTypeRegex" : null
+  },
+  "queryManipulation" : {
+    "server" : {
+      "protocol" : "HTTP",
+      "host" : "localhost",
+      "port" : 16000,
+      "productTypeRegex" : null
+    },
+    "expandQuery" : true,
+    "blacklist" : "ISO_BLACKLIST",
+    "typeAheadMode" : "Index",
+    "enabled" : false
+  },
+  "view" : {
+    "connector" : {
+      "protocol" : "HTTP",
+      "host" : "localhost",
+      "port" : 10000,
+      "productTypeRegex" : ".*?CONNECTOR"
+    },
+    "referenceField" : "DREREFERENCE",
+    "viewingMode" : "FIELD",
+    "host" : "localhost",
+    "protocol" : "HTTP",
+    "port" : 9080
+  },
+  "mmap" : {
+    "enabled" : false,
+    "baseUrl" : ""
+  },
+  "map" : {
+    "tileUrlTemplate" : "",
+    "enabled" : false,
+    "attribution" : ""
+  }
+}
