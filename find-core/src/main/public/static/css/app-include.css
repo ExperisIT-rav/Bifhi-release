@@ -234,7 +234,7 @@ dt,
 }
 
 .initial-loading-indicator {
-    border: 1px solid #00b388;
+    border: 1px solid #6699ff;
     border-radius: 5px;
     height: 32px;
     left: 50%;
@@ -373,7 +373,7 @@ fieldset.radio-fieldset > label {
 }
 
 .middle-container h4 {
-    color: #018f6e;
+    color: black;
     font-weight: bold;
     font-size: 18px;
     overflow: hidden;
@@ -483,26 +483,45 @@ fieldset.radio-fieldset > label {
 }
 
 .find-logo-small {
-    font-family: Metric-Semibold;
+/*    font-family: Metric-Semibold;
     float: left;
     font-size: 22px;
-    line-height: 20px;
+    line-height: 20px;*/
+
+    background: url('../img/Find_Logo_sml2.png') no-repeat;
+    background-size: 210px 28px;
+    width: 210px;
+    height: 28px;
 }
 
 .find-logo-large {
-    font-size: 49px;
+/*    font-size: 49px;
     font-family: Metric-Semibold;
     color: #000;
     line-height: 46px;
     text-align: center;
+    display: inline-block;*/
+
+    background-image: url('../img/Find_Logo_lge2.png');
+    width: 500px;
+    height: 70px;
     display: inline-block;
+    vertical-align: middle;
 }
 
 .hp-logo-footer {
-    background: url('../img/HPE_logo.png') no-repeat center;
+/*    background: url('../img/HPE_logo.png') no-repeat center;
     background-size: 140px 55px;
     height: 55px;
     width: 140px;
+    position: fixed;
+    bottom: 20px;
+    left: calc(50% - 70px);*/
+
+    background: url('../img/HPE_logo2.png') no-repeat center;
+    background-size: 140px 55px;
+    height:220px;
+    width:560px;
     position: fixed;
     bottom: 20px;
     left: calc(50% - 70px);
@@ -552,9 +571,34 @@ input.find-input {
 }
 
 .main-results-container {
-    border-bottom: 1px solid #F2F2F2;
+/*    border-bottom: 1px solid #F2F2F2;
     width: 100%;
-    padding: 0 10px;
+    padding: 0 10px;*/
+
+    border-bottom: 1px solid #F2F2F2;
+    border-style: solid;
+    border-width: medium;
+    background-color:#6699ff;
+    width: 280px;
+    height: 350px;
+    display:inline-block;
+    margin-left: 40px;
+    margin-bottom: 35px;
+    border-radius: 20px;
+    padding: 10px 10px 10px 10px;
+    box-shadow: -1px 2px 10px 3px rgba(0, 0, 0, 0.3) inset;
+    position: relative;
+}
+
+.main-results-icons {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.main-results-icons img {
+    width:40px;
+    height:40px;
 }
 
 .document-thumbnail {
@@ -607,13 +651,13 @@ input.find-input {
 }
 
 .selected-saved-search .hpebox-content {
-    background-color: #00b388;
+    background-color: #6699ff;
     color: #fff;
 }
 
 .result-container-control {
-    color: #00b388;
-    font-size: 14px;
+    color: pink;
+    font-size: 13px;
     text-decoration: none;
 }
 
@@ -747,7 +791,7 @@ input.find-input {
 }
 
 .suggestion-head-text {
-    color: #00b388;
+    color: #6699ff;
 }
 
 .comparison-list-title,
@@ -762,6 +806,8 @@ input.find-input {
 .results-contents {
     display: block;
     overflow: hidden;
+    height:100%;
+    width:100%;
 }
 
 .entity-topic-map {
@@ -808,7 +854,7 @@ input.find-input {
 }
 
 .loading-spinner, .loading-spinner i {
-    color: #00b388;
+    color: #6699ff;
 }
 
 .loading-spinner.loading-spinner-lg {
@@ -959,7 +1005,7 @@ input.find-input {
 }
 
 .service-view-container .hp-check {
-    color: #00b388;
+    color: #6699ff;
 }
 
 .top-options-container {
@@ -999,7 +1045,12 @@ input.find-input {
 
 .find-navbar .dropdown-toggle,
 .find-navbar a {
-    color: #fff;
+    /*color: #fff;*/
+
+    background-color: #6699ff;
+         color: #fff;
+     -webkit-transition: all 0.5s ease;
+     transition: all 0.5s ease;
 }
 
 .find-navbar .dropdown-toggle:hover,
@@ -1089,13 +1140,18 @@ input:-moz-placeholder::before {
 }
 
 .find-banner-container {
-    background: #49B59B url('../img/Find_banner.png');
+/*    background: #49B59B url('../img/Find_banner.png');
     height: 125px;
-    z-index: 1;
+    z-index: 1;*/
+
+    background: #6699ff url('../img/Find_banner4.png');
+    background-repeat: no-repeat;
+    background-size: 323px 125px;
+    height: 125px;
 }
 
 .popover h1, .popover h2, .popover h3, .popover h4, .popover h5, .popover h6 , .popover a{
-    color: #00b388;
+    color: #6699ff;
 }
 
 /*TODO use bootstrap theme customiser for these */
@@ -1285,7 +1341,7 @@ input:-moz-placeholder::before {
 /* View server */
 .view-server-loading-indicator {
     font-size: 32px;
-    color: #00b388;
+    color: #6699ff;
     text-align: center;
 }
 
