@@ -13,6 +13,15 @@ import com.hp.autonomy.searchcomponents.idol.search.IdolSearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.joda.time.DateTime;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 @Controller
 @RequestMapping(DocumentsController.SEARCH_PATH)

@@ -24,7 +24,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping(DocumentsController.SEARCH_PATH)
@@ -78,7 +81,68 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
                               @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "true") final boolean highlight,
                               @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "true") final boolean autoCorrect) throws E {
         final SearchRequest<S> searchRequest = parseRequestParamsToObject(text, resultsStart, maxResults, summary, index, fieldText, sort, minDate, maxDate, highlight, autoCorrect);
-        return documentsService.queryTextIndex(searchRequest);
+
+        // Get all results as index (not with all the field values)
+        Documents<R> resultIndex = documentsService.queryTextIndex(searchRequest);
+
+        List<R> results = resultIndex.getDocuments();
+        S base = null;
+        GetContentRequestIndex<S> getContentRequestIndex = null;
+        GetContentRequest<S> getContentRequest = null;
+        List<R> partialResultsWithAllFields = null;
+        HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
+        HashSet<String> referenceSet = null;
+        Documents<R> completeResults = null;
+
+        System.out.println("test");
+
+        for (R result: results){
+
+            if(resultsReference.containsKey(result.getIndex())){
+                referenceSet = resultsReference.get(result.getIndex());
+                resultsReference.remove(result.getIndex());
+                referenceSet.add(result.getReference());
+                resultsReference.put(result.getIndex(), referenceSet);
+            }
+            else {
+                referenceSet = new HashSet<String>();
+                referenceSet.add(result.getReference());
+                resultsReference.put(result.getIndex(), referenceSet);
+            }
+
+            base = (S)result.getIndex();
+        }
+
+        for (String key: resultsReference.keySet()){
+            getContentRequestIndex = new GetContentRequestIndex<>((S)key, resultsReference.get(key));
+            getContentRequest = new GetContentRequest<>(Collections.singleton(getContentRequestIndex), PrintParam.All.name());
+
+            if(partialResultsWithAllFields == null){
+                partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
+            }
+            else {
+                partialResultsWithAllFields.addAll(documentsService.getDocumentContent(getContentRequest));
+            }
+        }
+
+        //getContentRequestIndex = new GetContentRequestIndex<>(base, Collections.singleton(result.getReference()));
+        //getContentRequest = new GetContentRequest<>(Collections.singleton(getContentRequestIndex), PrintParam.All.name());
+        //partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
+
+        completeResults = new Documents<R>(partialResultsWithAllFields, resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
+
+        return completeResults;
+    }
+
+    @RequestMapping(value = GET_DOCUMENT_CONTENT_PATH, method = RequestMethod.GET)
+    @ResponseBody
+    public R getDocumentContent(@RequestParam(REFERENCE_PARAM) final String reference,
+                                @RequestParam(DATABASE_PARAM) final S database) throws E {
+        final GetContentRequestIndex<S> getContentRequestIndex = new GetContentRequestIndex<>(database, Collections.singleton(reference));
+        final GetContentRequest<S> getContentRequest = new GetContentRequest<>(Collections.singleton(getContentRequestIndex), PrintParam.All.name());
+        final List<R> results = documentsService.getDocumentContent(getContentRequest);
+
+        return results.isEmpty() ? this.<R>throwException("No content found for document with reference " + reference + " in database " + database) : results.get(0);
     }
 
     @SuppressWarnings("MethodWithTooManyParameters")
@@ -96,6 +160,7 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
                                            @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "true") final boolean highlight,
                                            @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "true") final boolean autoCorrect) throws E {
         final SearchRequest<S> searchRequest = parseRequestParamsToObject(text, resultsStart, maxResults, summary, index, fieldText, sort, minDate, maxDate, highlight, autoCorrect);
+
         return documentsService.queryTextIndexForPromotions(searchRequest);
     }
 
@@ -115,16 +180,5 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
         suggestRequest.setSummary("concept");
         suggestRequest.setMaxResults(FIND_SIMILAR_MAX_RESULTS);
         return documentsService.findSimilar(suggestRequest);
-    }
-
-    @RequestMapping(value = GET_DOCUMENT_CONTENT_PATH, method = RequestMethod.GET)
-    @ResponseBody
-    public R getDocumentContent(@RequestParam(REFERENCE_PARAM) final String reference,
-                                @RequestParam(DATABASE_PARAM) final S database) throws E {
-        final GetContentRequestIndex<S> getContentRequestIndex = new GetContentRequestIndex<>(database, Collections.singleton(reference));
-        final GetContentRequest<S> getContentRequest = new GetContentRequest<>(Collections.singleton(getContentRequestIndex), PrintParam.All.name());
-        final List<R> results = documentsService.getDocumentContent(getContentRequest);
-
-        return results.isEmpty() ? this.<R>throwException("No content found for document with reference " + reference + " in database " + database) : results.get(0);
     }
 }

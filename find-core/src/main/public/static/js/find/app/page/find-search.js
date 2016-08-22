@@ -176,6 +176,8 @@ define([
                 this.removeDocumentDetailView();
 
                 var options = this.documentDetailOptions.apply(this, arguments);
+                //console.log("options");
+                //console.log(options);
                 this.populateDocumentModelForDetailView(options);
             }, this);
         },
@@ -372,6 +374,8 @@ define([
 
         // If we already have the document model in one of our collections, then don't bother fetching it
         populateDocumentModelForDetailView: function (options) {
+            console.log("here");
+            console.log(options)
             new DocumentModel().fetch({
                 data: {
                     reference: options.reference,
@@ -382,6 +386,8 @@ define([
         },
 
         renderDocumentDetail: function(model) {
+            //console.log("test");
+            //console.log(model);
             this.documentDetailView = new DocumentDetailView({
                 backUrl: this.generateURL(),
                 model: model,

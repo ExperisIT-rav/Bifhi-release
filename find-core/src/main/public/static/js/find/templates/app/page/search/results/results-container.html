@@ -1,9 +1,9 @@
 <% var promoted = promotion ? 'promoted-document' : ''; %>
 
 <div class="main-results-container m-b-sm <%-promoted%>" data-rel="results" data-cid="<%-cid %>">
-    <span class="pull-left m-t-xs text-muted m-r-sm content-type">
+<!--     <span class="pull-left m-t-xs text-muted m-r-sm content-type">
         <i class="icomoon-file-<%-contentType%>"></i>
-    </span>
+    </span> -->
 
     <div class="results-contents">
         <% if (promotion) { %>
@@ -22,8 +22,16 @@
         <p class="result-summary">
             <%= summary %>
         </p>
-        <p class="text-right">
-            <a class="similar-documents-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarDocuments']%></a>
+        <p class="result-test">
+            <%= testVal %>
+        </p>
+        <p class="text-right main-results-icons">
+            <!-- <a class="similar-documents-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarDocuments']%></a> -->
+            <a class="similar-documents-trigger result-container-control" role="button" tabindex="-1"><img src="../img/Startup-Icons_list.png"></a>
+            <!-- <a class="similar-cv-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarCv']%></a> -->
+            <a class="similar-cvs-trigger result-container-control" role="button" tabindex="-1"><img src="../img/Startup-Icons_identiti-document.png"></a>
+            <!-- <a class="similar-offers-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarOffers']%></a> -->
+            <a class="similar-offers-trigger result-container-control" role="button" tabindex="-1"><img src="../img/Startup-Icons_documents.png"></a>
         </p>
     </div>
 </div>

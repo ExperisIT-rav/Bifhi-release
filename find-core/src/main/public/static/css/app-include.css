@@ -155,11 +155,16 @@ dt,
 
 .button-primary:focus.pressed-down,
 .pressed-down {
-    background-color: #018062;
-    border-color: #018062;
+    background-color: #6699ff;
+    border-color: #6699ff;
     color: #ffffff;
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
     outline: 0;
+}
+
+.button-primary {
+    background-color: #6699ff;
+    border-color: #6699ff;
 }
 
 .no-box-shadow {
@@ -586,7 +591,8 @@ input.find-input {
     margin-bottom: 35px;
     border-radius: 20px;
     padding: 10px 10px 10px 10px;
-    box-shadow: -1px 2px 10px 3px rgba(0, 0, 0, 0.3) inset;
+    /*box-shadow: -1px 2px 10px 3px rgba(0, 0, 0, 0.3) inset;*/
+
     position: relative;
 }
 
@@ -595,6 +601,7 @@ input.find-input {
     bottom: 0;
     right: 0;
 }
+
 
 .main-results-icons img {
     width:40px;

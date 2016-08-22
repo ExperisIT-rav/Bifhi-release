@@ -76,6 +76,8 @@ define([
 
         events: {
             'click .entity-text': function(e) {
+
+                //console.log("test1");
                 e.stopPropagation();
 
                 var $target = $(e.target);
@@ -87,6 +89,8 @@ define([
                 });
             },
             'click .preview-mode [data-cid]': function(e) {
+
+                //console.log("test2");
                 var $target = $(e.currentTarget);
 
                 if ($target.hasClass('selected-document')) {
@@ -96,8 +100,12 @@ define([
                     //resetting selected-document class
                     this.$('.main-results-container').removeClass('selected-document');
                 } else {
+
+                    //console.log("test3");
                     //enable/choose another preview view
                     this.trigger('preview', this.documentsCollection.get($target.data('cid')));
+
+                    //console.log(this.documentsCollection.get($target.data('cid')));
 
                     //resetting selected-document class and adding it to the target
                     this.$('.main-results-container').removeClass('selected-document');
@@ -107,7 +115,9 @@ define([
         },
 
         initialize: function(options) {
-            _.bindAll(this, 'handlePopover');
+            _.bindAll(this, 'handlePopoverDocuments');
+            _.bindAll(this, 'handlePopoverCvs');
+            _.bindAll(this, 'handlePopoverOffers');
 
             this.mode = options.mode;
             this.isComparisonView = options.isComparisonView;
@@ -266,7 +276,22 @@ define([
             }
         },
 
+        getFieldsResult: function(model) {
+            console.log('test getFieldsResult');
+
+            var fields = model.get('fields');
+            //console.log(fields);
+            for (var k in fields) {
+                if(fields[k]['names'] == 'COMPANY')
+                    return fields[k]['values']
+            }
+
+            return 'test value';
+        },
+
         formatResult: function(model, isPromotion) {
+            //console.log("testtttt");
+            //console.log(model);
             var reference = model.get('reference');
             var summary = addLinksToSummary(this.entityCollection, model.get('summary'));
 
@@ -288,7 +313,8 @@ define([
                 promotion: isPromotion,
                 date: model.has('date') ? model.get('date').fromNow() : null,
                 contentType: getContentTypeClass(model),
-                thumbnail: model.get('thumbnail')
+                thumbnail: model.get('thumbnail'),
+                testVal: this.getFieldsResult(model)
             }));
 
             if (isPromotion) {
@@ -297,20 +323,126 @@ define([
                 this.$('.main-results-content .results').append($newResult);
             }
 
+            // Trigger for the similar offers
             var $similarDocumentsTrigger = $newResult.find('.similar-documents-trigger');
-            popover($similarDocumentsTrigger, 'focus', this.handlePopover);
+            popover($similarDocumentsTrigger, 'focus', this.handlePopoverDocuments);
 
             //prevent preview mode opening when clicking similar documents
             $similarDocumentsTrigger.on('click', function(e) {
                 e.stopPropagation();
             });
+
+
+            // Trigger for the similar cv
+            var $similarCvsTrigger = $newResult.find('.similar-cvs-trigger');
+            popover($similarCvsTrigger, 'focus', this.handlePopoverCvs);
+
+            //prevent preview mode opening when clicking similar documents
+            $similarCvsTrigger.on('click', function(e) {
+                e.stopPropagation();
+            });
+
+
+            // Trigger for the similar offers
+            var $similarOffersTrigger = $newResult.find('.similar-offers-trigger');
+            popover($similarOffersTrigger, 'focus', this.handlePopoverOffers);
+
+            //prevent preview mode opening when clicking similar documents
+            $similarOffersTrigger.on('click', function(e) {
+                e.stopPropagation();
+            });
+
+
         },
 
-        handlePopover: function($content, $target) {
+        handlePopoverDocuments: function($content, $target) {
             var targetDocument = this.documentsCollection.get($target.closest('[data-cid]').data('cid'));
 
             var collection = new SimilarDocumentsCollection([], {
                 indexes: this.queryModel.get('indexes'),
+                reference: targetDocument.get('reference')
+            });
+
+            console.log("queryModel = ");
+            console.log(this.queryModel);
+
+            collection.fetch({
+                error: _.bind(function() {
+                    $content.html(this.popoverMessageTemplate({message: i18n['search.similarDocuments.error']}));
+                }, this),
+                success: _.bind(function() {
+                    if (collection.isEmpty()) {
+                        $content.html(this.popoverMessageTemplate({message: i18n['search.similarDocuments.none']}));
+                    } else {
+                        $content.html('<ul class="list-unstyled"></ul>');
+                        _.each(collection.models, function(model) {
+                            console.log("model = ");
+                            console.log(model);
+                            var $listItem = $(this.popoverTemplate({
+                                title: model.get('title'),
+                                summary: model.get('summary').trim().substring(0, 100) + '...'
+                            }));
+
+                            $listItem.find('a.results-popover-title').click(function() {
+                                vent.navigateToDetailRoute(model);
+                            });
+
+                            // Stop preview from triggering when clicking popover
+                            $listItem.click(function(e) {
+                                e.stopPropagation();
+                            });
+
+                            $content.find('ul').append($listItem);
+                        }, this);
+                    }
+                }, this)
+            });
+        },
+
+        handlePopoverCvs: function($content, $target) {
+            var targetDocument = this.documentsCollection.get($target.closest('[data-cid]').data('cid'));
+
+            var collection = new SimilarDocumentsCollection([], {
+                indexes: this.queryModel.get('indexes')[0],
+                reference: targetDocument.get('reference')
+            });
+
+            collection.fetch({
+                error: _.bind(function() {
+                    $content.html(this.popoverMessageTemplate({message: i18n['search.similarDocuments.error']}));
+                }, this),
+                success: _.bind(function() {
+                    if (collection.isEmpty()) {
+                        $content.html(this.popoverMessageTemplate({message: i18n['search.similarDocuments.none']}));
+                    } else {
+                        $content.html('<ul class="list-unstyled"></ul>');
+                        _.each(collection.models, function(model) {
+                            var $listItem = $(this.popoverTemplate({
+                                title: model.get('title'),
+                                summary: model.get('summary').trim().substring(0, 100) + '...'
+                            }));
+
+                            $listItem.find('a.results-popover-title').click(function() {
+                                vent.navigateToDetailRoute(model);
+                            });
+
+                            // Stop preview from triggering when clicking popover
+                            $listItem.click(function(e) {
+                                e.stopPropagation();
+                            });
+
+                            $content.find('ul').append($listItem);
+                        }, this);
+                    }
+                }, this)
+            });
+        },
+
+        handlePopoverOffers: function($content, $target) {
+            var targetDocument = this.documentsCollection.get($target.closest('[data-cid]').data('cid'));
+
+            var collection = new SimilarDocumentsCollection([], {
+                indexes: this.queryModel.get('indexes')[1],
                 reference: targetDocument.get('reference')
             });
 

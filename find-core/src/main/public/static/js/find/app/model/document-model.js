@@ -49,6 +49,8 @@ define([
         },
 
         parse: function(response) {
+            console.log("response = ");
+            console.log(response);
             if (!response.title) {
                 // If there is no title, use the last part of the reference (assuming the reference is a file path)
                 // C:\Documents\file.txt -> file.txt
