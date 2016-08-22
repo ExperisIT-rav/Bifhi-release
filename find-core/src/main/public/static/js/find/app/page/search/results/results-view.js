@@ -276,17 +276,17 @@ define([
             }
         },
 
-        getFieldsResult: function(model) {
+        getFieldsResult: function(model, fieldName) {
             console.log('test getFieldsResult');
 
             var fields = model.get('fields');
             //console.log(fields);
             for (var k in fields) {
-                if(fields[k]['names'] == 'COMPANY')
+                if(fields[k]['names'] == fieldName)
                     return fields[k]['values']
             }
 
-            return 'test value';
+            return 'No value found';
         },
 
         formatResult: function(model, isPromotion) {
@@ -306,7 +306,7 @@ define([
             var $newResult = $(this.resultsTemplate({
                 cid: model.cid,
                 i18n: i18n,
-                title: model.get('title'),
+                title: this.getFieldsResult(model, 'Name'),
                 reference: reference,
                 href: href,
                 summary: summary,
@@ -314,7 +314,7 @@ define([
                 date: model.has('date') ? model.get('date').fromNow() : null,
                 contentType: getContentTypeClass(model),
                 thumbnail: model.get('thumbnail'),
-                testVal: this.getFieldsResult(model)
+                exp: this.getFieldsResult(model, 'XP_tot')
             }));
 
             if (isPromotion) {

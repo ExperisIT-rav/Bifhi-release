@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.HashMap;
 
 @Controller
@@ -86,15 +87,15 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
         Documents<R> resultIndex = documentsService.queryTextIndex(searchRequest);
 
         List<R> results = resultIndex.getDocuments();
-        S base = null;
         GetContentRequestIndex<S> getContentRequestIndex = null;
+        Set<GetContentRequestIndex<S>> getContentRequestIndexSet = null;
         GetContentRequest<S> getContentRequest = null;
         List<R> partialResultsWithAllFields = null;
         HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
         HashSet<String> referenceSet = null;
         Documents<R> completeResults = null;
 
-        System.out.println("test");
+        System.out.println("maxResults = "+maxResults);
 
         for (R result: results){
 
@@ -110,12 +111,19 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
                 resultsReference.put(result.getIndex(), referenceSet);
             }
 
-            base = (S)result.getIndex();
         }
 
         for (String key: resultsReference.keySet()){
-            getContentRequestIndex = new GetContentRequestIndex<>((S)key, resultsReference.get(key));
-            getContentRequest = new GetContentRequest<>(Collections.singleton(getContentRequestIndex), PrintParam.All.name());
+
+            getContentRequestIndexSet = new HashSet<GetContentRequestIndex<S>>();
+            for(String reference: resultsReference.get(key)){
+                getContentRequestIndexSet.add(new GetContentRequestIndex<>((S)key, Collections.singleton(reference)));
+            }
+            //getContentRequestIndex = new GetContentRequestIndex<>((S)key, resultsReference.get(key));
+            getContentRequest = new GetContentRequest<>(getContentRequestIndexSet, PrintParam.All.name());
+
+//            System.out.println("set num real = "+resultsReference.get(key).size());
+//            System.out.println("set key = "+key);
 
             if(partialResultsWithAllFields == null){
                 partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
@@ -131,7 +139,12 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
 
         completeResults = new Documents<R>(partialResultsWithAllFields, resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
 
+//        System.out.println("result num = "+resultIndex.getTotalResults());
+//        System.out.println("result num real = "+partialResultsWithAllFields.size());
+
         return completeResults;
+
+//        return resultIndex;
     }
 
     @RequestMapping(value = GET_DOCUMENT_CONTENT_PATH, method = RequestMethod.GET)
