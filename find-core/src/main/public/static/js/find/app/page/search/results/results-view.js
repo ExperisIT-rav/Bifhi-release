@@ -277,7 +277,7 @@ define([
         },
 
         getFieldsResult: function(model, fieldName) {
-            console.log('test getFieldsResult');
+            console.log('test method getFieldsResult');
 
             var fields = model.get('fields');
             //console.log(fields);
