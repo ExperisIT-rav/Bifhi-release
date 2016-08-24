@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 @Controller
 @RequestMapping(DocumentsController.SEARCH_PATH)
@@ -95,8 +97,6 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
         HashSet<String> referenceSet = null;
         Documents<R> completeResults = null;
 
-        System.out.println("maxResults = "+maxResults);
-
         for (R result: results){
 
             if(resultsReference.containsKey(result.getIndex())){
@@ -117,7 +117,9 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
 
             getContentRequestIndexSet = new HashSet<GetContentRequestIndex<S>>();
             for(String reference: resultsReference.get(key)){
-                getContentRequestIndexSet.add(new GetContentRequestIndex<>((S)key, Collections.singleton(reference)));
+                if(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf")) {
+                    getContentRequestIndexSet.add(new GetContentRequestIndex<>((S) key, Collections.singleton(reference)));
+                }
             }
             //getContentRequestIndex = new GetContentRequestIndex<>((S)key, resultsReference.get(key));
             getContentRequest = new GetContentRequest<>(getContentRequestIndexSet, PrintParam.All.name());
@@ -137,10 +139,22 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
         //getContentRequest = new GetContentRequest<>(Collections.singleton(getContentRequestIndex), PrintParam.All.name());
         //partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
 
+        ArrayList<String> documentReferenceToRemove = new ArrayList<String>();
+        for (Iterator<R> it = partialResultsWithAllFields.iterator(); it.hasNext();){
+            R document = it.next();
+            String reference = document.getReference();
+            if(!(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf"))){
+                documentReferenceToRemove.add(reference);
+                it.remove();
+            }
+        }
+
+        System.out.println("nb removed = "+documentReferenceToRemove.size());
+
         completeResults = new Documents<R>(partialResultsWithAllFields, resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
 
 //        System.out.println("result num = "+resultIndex.getTotalResults());
-//        System.out.println("result num real = "+partialResultsWithAllFields.size());
+        System.out.println("result num real = "+partialResultsWithAllFields.size());
 
         return completeResults;
 

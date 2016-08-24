@@ -306,7 +306,7 @@ define([
             var $newResult = $(this.resultsTemplate({
                 cid: model.cid,
                 i18n: i18n,
-                title: this.getFieldsResult(model, 'Name'),
+                title: this.getFieldsResult(model, 'NAME'),
                 reference: reference,
                 href: href,
                 summary: summary,
@@ -314,7 +314,8 @@ define([
                 date: model.has('date') ? model.get('date').fromNow() : null,
                 contentType: getContentTypeClass(model),
                 thumbnail: model.get('thumbnail'),
-                exp: this.getFieldsResult(model, 'XP_tot')
+                exp: this.getFieldsResult(model, 'XP_TOT'),
+                index: model.get('index')
             }));
 
             if (isPromotion) {
