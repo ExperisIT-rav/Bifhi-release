@@ -277,15 +277,12 @@ define([
         },
 
         getFieldsResult: function(model, fieldName) {
-            console.log('test method getFieldsResult');
-
             var fields = model.get('fields');
             //console.log(fields);
             for (var k in fields) {
                 if(fields[k]['names'] == fieldName)
                     return fields[k]['values']
             }
-
             return 'No value found';
         },
 
@@ -364,8 +361,8 @@ define([
                 reference: targetDocument.get('reference')
             });
 
-            console.log("queryModel = ");
-            console.log(this.queryModel);
+//            console.log("queryModel = ");
+//            console.log(this.queryModel);
 
             collection.fetch({
                 error: _.bind(function() {
@@ -377,8 +374,8 @@ define([
                     } else {
                         $content.html('<ul class="list-unstyled"></ul>');
                         _.each(collection.models, function(model) {
-                            console.log("model = ");
-                            console.log(model);
+//                            console.log("model = ");
+//                            console.log(model);
                             var $listItem = $(this.popoverTemplate({
                                 title: model.get('title'),
                                 summary: model.get('summary').trim().substring(0, 100) + '...'
@@ -403,8 +400,10 @@ define([
         handlePopoverCvs: function($content, $target) {
             var targetDocument = this.documentsCollection.get($target.closest('[data-cid]').data('cid'));
 
+            console.log(this.queryModel.get('indexes'));
+
             var collection = new SimilarDocumentsCollection([], {
-                indexes: this.queryModel.get('indexes')[0],
+                indexes: this.queryModel.get('indexes')[2],
                 reference: targetDocument.get('reference')
             });
 
@@ -443,7 +442,7 @@ define([
             var targetDocument = this.documentsCollection.get($target.closest('[data-cid]').data('cid'));
 
             var collection = new SimilarDocumentsCollection([], {
-                indexes: this.queryModel.get('indexes')[1],
+                indexes: this.queryModel.get('indexes')[3],
                 reference: targetDocument.get('reference')
             });
 

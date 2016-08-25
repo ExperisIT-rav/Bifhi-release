@@ -5,13 +5,7 @@
 
 package com.hp.autonomy.frontend.find.core.search;
 
-import com.hp.autonomy.searchcomponents.core.search.DocumentsService;
-import com.hp.autonomy.searchcomponents.core.search.GetContentRequest;
-import com.hp.autonomy.searchcomponents.core.search.GetContentRequestIndex;
-import com.hp.autonomy.searchcomponents.core.search.QueryRestrictions;
-import com.hp.autonomy.searchcomponents.core.search.SearchRequest;
-import com.hp.autonomy.searchcomponents.core.search.SearchResult;
-import com.hp.autonomy.searchcomponents.core.search.SuggestRequest;
+import com.hp.autonomy.searchcomponents.core.search.*;
 import com.hp.autonomy.types.requests.Documents;
 import com.hp.autonomy.types.requests.idol.actions.query.params.PrintParam;
 import org.joda.time.DateTime;
@@ -21,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import com.hp.autonomy.searchcomponents.core.search.QueryRestrictions;
+import com.hp.autonomy.types.idol.QsElement;
+
+
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -87,78 +85,7 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
 
         // Get all results as index (not with all the field values)
         Documents<R> resultIndex = documentsService.queryTextIndex(searchRequest);
-
-        List<R> results = resultIndex.getDocuments();
-        GetContentRequestIndex<S> getContentRequestIndex = null;
-        Set<GetContentRequestIndex<S>> getContentRequestIndexSet = null;
-        GetContentRequest<S> getContentRequest = null;
-        List<R> partialResultsWithAllFields = null;
-        HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
-        HashSet<String> referenceSet = null;
-        Documents<R> completeResults = null;
-
-        for (R result: results){
-
-            if(resultsReference.containsKey(result.getIndex())){
-                referenceSet = resultsReference.get(result.getIndex());
-                resultsReference.remove(result.getIndex());
-                referenceSet.add(result.getReference());
-                resultsReference.put(result.getIndex(), referenceSet);
-            }
-            else {
-                referenceSet = new HashSet<String>();
-                referenceSet.add(result.getReference());
-                resultsReference.put(result.getIndex(), referenceSet);
-            }
-
-        }
-
-        for (String key: resultsReference.keySet()){
-
-            getContentRequestIndexSet = new HashSet<GetContentRequestIndex<S>>();
-            for(String reference: resultsReference.get(key)){
-                if(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf")) {
-                    getContentRequestIndexSet.add(new GetContentRequestIndex<>((S) key, Collections.singleton(reference)));
-                }
-            }
-            //getContentRequestIndex = new GetContentRequestIndex<>((S)key, resultsReference.get(key));
-            getContentRequest = new GetContentRequest<>(getContentRequestIndexSet, PrintParam.All.name());
-
-//            System.out.println("set num real = "+resultsReference.get(key).size());
-//            System.out.println("set key = "+key);
-
-            if(partialResultsWithAllFields == null){
-                partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
-            }
-            else {
-                partialResultsWithAllFields.addAll(documentsService.getDocumentContent(getContentRequest));
-            }
-        }
-
-        //getContentRequestIndex = new GetContentRequestIndex<>(base, Collections.singleton(result.getReference()));
-        //getContentRequest = new GetContentRequest<>(Collections.singleton(getContentRequestIndex), PrintParam.All.name());
-        //partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
-
-        ArrayList<String> documentReferenceToRemove = new ArrayList<String>();
-        for (Iterator<R> it = partialResultsWithAllFields.iterator(); it.hasNext();){
-            R document = it.next();
-            String reference = document.getReference();
-            if(!(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf"))){
-                documentReferenceToRemove.add(reference);
-                it.remove();
-            }
-        }
-
-        System.out.println("nb removed = "+documentReferenceToRemove.size());
-
-        completeResults = new Documents<R>(partialResultsWithAllFields, resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
-
-//        System.out.println("result num = "+resultIndex.getTotalResults());
-        System.out.println("result num real = "+partialResultsWithAllFields.size());
-
-        return completeResults;
-
-//        return resultIndex;
+         return resultIndex;
     }
 
     @RequestMapping(value = GET_DOCUMENT_CONTENT_PATH, method = RequestMethod.GET)
