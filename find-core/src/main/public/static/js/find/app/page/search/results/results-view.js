@@ -277,7 +277,7 @@ define([
         },
 
         getFieldsResult: function(model, fieldName) {
-            console.log('test method getFieldsResult');
+//            console.log('test method getFieldsResult');
 
             var fields = model.get('fields');
             //console.log(fields);
@@ -364,8 +364,8 @@ define([
                 reference: targetDocument.get('reference')
             });
 
-            console.log("queryModel = ");
-            console.log(this.queryModel);
+//            console.log("queryModel = ");
+//            console.log(this.queryModel);
 
             collection.fetch({
                 error: _.bind(function() {
@@ -377,8 +377,8 @@ define([
                     } else {
                         $content.html('<ul class="list-unstyled"></ul>');
                         _.each(collection.models, function(model) {
-                            console.log("model = ");
-                            console.log(model);
+//                            console.log("model = ");
+//                            console.log(model);
                             var $listItem = $(this.popoverTemplate({
                                 title: model.get('title'),
                                 summary: model.get('summary').trim().substring(0, 100) + '...'

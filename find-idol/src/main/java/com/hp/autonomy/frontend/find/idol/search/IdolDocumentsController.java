@@ -8,12 +8,11 @@ package com.hp.autonomy.frontend.find.idol.search;
 import com.autonomy.aci.client.services.AciErrorException;
 import com.hp.autonomy.frontend.find.core.search.DocumentsController;
 import com.hp.autonomy.frontend.find.core.search.QueryRestrictionsBuilder;
-import com.hp.autonomy.searchcomponents.core.search.DocumentsService;
-import com.hp.autonomy.searchcomponents.core.search.GetContentRequest;
-import com.hp.autonomy.searchcomponents.core.search.GetContentRequestIndex;
-import com.hp.autonomy.searchcomponents.core.search.SearchRequest;
+import com.hp.autonomy.searchcomponents.core.search.*;
 import com.hp.autonomy.searchcomponents.idol.search.IdolSearchResult;
+import com.hp.autonomy.types.idol.QsElement;
 import com.hp.autonomy.types.requests.Documents;
+import com.hp.autonomy.types.requests.idol.actions.query.QuerySummaryElement;
 import com.hp.autonomy.types.requests.idol.actions.query.params.PrintParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import com.hp.autonomy.frontend.find.idol.search.IdolRelatedConceptsController;
 
 import java.io.Serializable;
 import java.util.*;
@@ -116,6 +116,5 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
             return new Documents<IdolSearchResult>(new ArrayList<IdolSearchResult>(), resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
 
         }
-
     }
 }
