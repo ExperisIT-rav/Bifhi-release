@@ -8,7 +8,10 @@ package com.hp.autonomy.frontend.find.idol.search;
 import com.autonomy.aci.client.services.AciErrorException;
 import com.hp.autonomy.frontend.find.core.search.DocumentsController;
 import com.hp.autonomy.frontend.find.core.search.QueryRestrictionsBuilder;
-import com.hp.autonomy.searchcomponents.core.search.*;
+import com.hp.autonomy.searchcomponents.core.search.DocumentsService;
+import com.hp.autonomy.searchcomponents.core.search.GetContentRequest;
+import com.hp.autonomy.searchcomponents.core.search.GetContentRequestIndex;
+import com.hp.autonomy.searchcomponents.core.search.SearchRequest;
 import com.hp.autonomy.searchcomponents.idol.search.IdolSearchResult;
 import com.hp.autonomy.types.requests.Documents;
 import com.hp.autonomy.types.requests.idol.actions.query.params.PrintParam;
@@ -49,23 +52,23 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
                               @RequestParam(value = SORT_PARAM, required = false) final String sort,
                               @RequestParam(value = MIN_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime minDate,
                               @RequestParam(value = MAX_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime maxDate,
-                              @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "true") final boolean highlight,
-                              @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "true") final boolean autoCorrect) throws AciErrorException {
+                              @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "false") final boolean highlight,
+                              @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "false") final boolean autoCorrect) throws AciErrorException {
         final SearchRequest<String> searchRequest = parseRequestParamsToObject(text, resultsStart, maxResults, summary, index, fieldText, sort, minDate, maxDate, highlight, autoCorrect);
 
         // Get all results as index (not with all the field values)
         Documents<IdolSearchResult> resultIndex = documentsService.queryTextIndex(searchRequest);
 
-        List<IdolSearchResult> results = resultIndex.getDocuments();
-        GetContentRequestIndex<String> getContentRequestIndex = null;
-        Set<GetContentRequestIndex<String>> getContentRequestIndexSet = null;
-        GetContentRequest<String> getContentRequest = null;
-        List<IdolSearchResult> partialResultsWithAllFields = null;
-        HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
-        HashSet<String> referenceSet = null;
-        Documents<IdolSearchResult> completeResults = null;
-
         try {
+            List<IdolSearchResult> results = resultIndex.getDocuments();
+            GetContentRequestIndex<String> getContentRequestIndex = null;
+            Set<GetContentRequestIndex<String>> getContentRequestIndexSet = null;
+            GetContentRequest<String> getContentRequest = null;
+            List<IdolSearchResult> partialResultsWithAllFields = null;
+            HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
+            HashSet<String> referenceSet = null;
+            Documents<IdolSearchResult> completeResults = null;
+
             for (IdolSearchResult result : results) {
 
                 if (resultsReference.containsKey(result.getIndex())) {
@@ -81,10 +84,8 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
             }
 
             for (String key : resultsReference.keySet()) {
-
                 getContentRequestIndexSet = new HashSet<GetContentRequestIndex<String>>();
                 for (String reference : resultsReference.get(key)) {
-                    // Filter files to no get subfiles
                     if (reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf")) {
                         getContentRequestIndexSet.add(new GetContentRequestIndex<>((String) key, Collections.singleton(reference)));
                     }
@@ -98,26 +99,23 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
                 }
             }
 
+            ArrayList<String> documentReferenceToRemove = new ArrayList<String>();
             for (Iterator<IdolSearchResult> it = partialResultsWithAllFields.iterator(); it.hasNext(); ) {
                 IdolSearchResult document = it.next();
                 String reference = document.getReference();
-                // Filter files to no get subfiles
                 if (!(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf"))) {
+                    documentReferenceToRemove.add(reference);
                     it.remove();
                 }
             }
 
             completeResults = new Documents<IdolSearchResult>(partialResultsWithAllFields, resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
+
             return completeResults;
         } catch (NullPointerException e) {
             return new Documents<IdolSearchResult>(new ArrayList<IdolSearchResult>(), resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
 
         }
 
-//        relatedConceptsController = new IdolRelatedConceptsController(relatedConceptsService, new IdolQueryRestrictionsBuilder());
-//
-//        relatedConceptsController.findRelatedConcepts("Some query text", null, Collections.<String>emptyList(), null, null, null);
-//
-//        final RelatedConceptsRequest<String> relatedConceptsRequest = buildRelatedConceptsRequest(queryRestrictions);
     }
 }

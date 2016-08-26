@@ -5,7 +5,13 @@
 
 package com.hp.autonomy.frontend.find.core.search;
 
-import com.hp.autonomy.searchcomponents.core.search.*;
+import com.hp.autonomy.searchcomponents.core.search.DocumentsService;
+import com.hp.autonomy.searchcomponents.core.search.GetContentRequest;
+import com.hp.autonomy.searchcomponents.core.search.GetContentRequestIndex;
+import com.hp.autonomy.searchcomponents.core.search.QueryRestrictions;
+import com.hp.autonomy.searchcomponents.core.search.SearchRequest;
+import com.hp.autonomy.searchcomponents.core.search.SearchResult;
+import com.hp.autonomy.searchcomponents.core.search.SuggestRequest;
 import com.hp.autonomy.types.requests.Documents;
 import com.hp.autonomy.types.requests.idol.actions.query.params.PrintParam;
 import org.joda.time.DateTime;
@@ -15,10 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.hp.autonomy.searchcomponents.core.search.QueryRestrictions;
-import com.hp.autonomy.types.idol.QsElement;
-
-
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -67,10 +69,7 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
 
     protected abstract <T> T throwException(final String message) throws E;
 
-    @SuppressWarnings("MethodWithTooManyParameters")
-    @RequestMapping(value = QUERY_PATH, method = RequestMethod.GET)
-    @ResponseBody
-    public Documents<R> query(@RequestParam(TEXT_PARAM) final String text,
+        public Documents<R> query(@RequestParam(TEXT_PARAM) final String text,
                               @RequestParam(value = RESULTS_START_PARAM, defaultValue = "1") final int resultsStart,
                               @RequestParam(MAX_RESULTS_PARAM) final int maxResults,
                               @RequestParam(SUMMARY_PARAM) final String summary,
@@ -79,14 +78,94 @@ public abstract class DocumentsController<S extends Serializable, R extends Sear
                               @RequestParam(value = SORT_PARAM, required = false) final String sort,
                               @RequestParam(value = MIN_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime minDate,
                               @RequestParam(value = MAX_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime maxDate,
-                              @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "true") final boolean highlight,
-                              @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "true") final boolean autoCorrect) throws E {
-        final SearchRequest<S> searchRequest = parseRequestParamsToObject(text, resultsStart, maxResults, summary, index, fieldText, sort, minDate, maxDate, highlight, autoCorrect);
+                              @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "false") final boolean highlight,
+                              @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "false") final boolean autoCorrect) throws E {
+            final SearchRequest<S> searchRequest = parseRequestParamsToObject(text, resultsStart, maxResults, summary, index, fieldText, sort, minDate, maxDate, highlight, autoCorrect);
 
-        // Get all results as index (not with all the field values)
-        Documents<R> resultIndex = documentsService.queryTextIndex(searchRequest);
-         return resultIndex;
-    }
+            // Get all results as index (not with all the field values)
+            Documents<R> resultIndex = documentsService.queryTextIndex(searchRequest);
+
+            return resultIndex;
+        }
+
+//    @SuppressWarnings("MethodWithTooManyParameters")
+//    @RequestMapping(value = QUERY_PATH, method = RequestMethod.GET)
+//    @ResponseBody
+//    public Documents<R> query(@RequestParam(TEXT_PARAM) final String text,
+//                              @RequestParam(value = RESULTS_START_PARAM, defaultValue = "1") final int resultsStart,
+//                              @RequestParam(MAX_RESULTS_PARAM) final int maxResults,
+//                              @RequestParam(SUMMARY_PARAM) final String summary,
+//                              @RequestParam(INDEXES_PARAM) final List<S> index,
+//                              @RequestParam(value = FIELD_TEXT_PARAM, defaultValue = "") final String fieldText,
+//                              @RequestParam(value = SORT_PARAM, required = false) final String sort,
+//                              @RequestParam(value = MIN_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime minDate,
+//                              @RequestParam(value = MAX_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime maxDate,
+//                              @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "false") final boolean highlight,
+//                              @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "false") final boolean autoCorrect) throws E {
+//        final SearchRequest<S> searchRequest = parseRequestParamsToObject(text, resultsStart, maxResults, summary, index, fieldText, sort, minDate, maxDate, highlight, autoCorrect);
+//
+//        // Get all results as index (not with all the field values)
+//        Documents<R> resultIndex = documentsService.queryTextIndex(searchRequest);
+//
+//        try {
+//            List<R> results = resultIndex.getDocuments();
+//            GetContentRequestIndex<S> getContentRequestIndex = null;
+//            Set<GetContentRequestIndex<S>> getContentRequestIndexSet = null;
+//            GetContentRequest<S> getContentRequest = null;
+//            List<R> partialResultsWithAllFields = null;
+//            HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
+//            HashSet<String> referenceSet = null;
+//            Documents<R> completeResults = null;
+//
+//            for (R result : results) {
+//
+//                if (resultsReference.containsKey(result.getIndex())) {
+//                    referenceSet = resultsReference.get(result.getIndex());
+//                    resultsReference.remove(result.getIndex());
+//                    referenceSet.add(result.getReference());
+//                    resultsReference.put(result.getIndex(), referenceSet);
+//                } else {
+//                    referenceSet = new HashSet<String>();
+//                    referenceSet.add(result.getReference());
+//                    resultsReference.put(result.getIndex(), referenceSet);
+//                }
+//            }
+//
+//            for (String key : resultsReference.keySet()) {
+//                getContentRequestIndexSet = new HashSet<GetContentRequestIndex<S>>();
+//                for (String reference : resultsReference.get(key)) {
+//                    if (reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf")) {
+//                        getContentRequestIndexSet.add(new GetContentRequestIndex<>((S) key, Collections.singleton(reference)));
+//                    }
+//                }
+//                getContentRequest = new GetContentRequest<>(getContentRequestIndexSet, PrintParam.All.name());
+//
+//                if (partialResultsWithAllFields == null) {
+//                    partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
+//                } else {
+//                    partialResultsWithAllFields.addAll(documentsService.getDocumentContent(getContentRequest));
+//                }
+//            }
+//
+//            ArrayList<String> documentReferenceToRemove = new ArrayList<String>();
+//            for (Iterator<R> it = partialResultsWithAllFields.iterator(); it.hasNext(); ) {
+//                R document = it.next();
+//                String reference = document.getReference();
+//                if (!(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf"))) {
+//                    documentReferenceToRemove.add(reference);
+//                    it.remove();
+//                }
+//            }
+//
+//            completeResults = new Documents<R>(partialResultsWithAllFields, resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
+//
+//            return completeResults;
+//        } catch (NullPointerException e) {
+//            return new Documents<R>(new ArrayList<R>(), resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
+//
+//        }
+//
+//    }
 
     @RequestMapping(value = GET_DOCUMENT_CONTENT_PATH, method = RequestMethod.GET)
     @ResponseBody

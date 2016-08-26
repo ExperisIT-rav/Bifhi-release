@@ -374,8 +374,8 @@ define([
 
         // If we already have the document model in one of our collections, then don't bother fetching it
         populateDocumentModelForDetailView: function (options) {
-//            console.log("here");
-//            console.log(options)
+            console.log("here");
+            console.log(options)
             new DocumentModel().fetch({
                 data: {
                     reference: options.reference,

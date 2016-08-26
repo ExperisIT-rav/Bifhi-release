@@ -592,21 +592,8 @@ input.find-input {
     border-radius: 20px;
     padding: 10px 10px 10px 10px;
     /*box-shadow: -1px 2px 10px 3px rgba(0, 0, 0, 0.3) inset;*/
+
     position: relative;
-}
-
-.main-results-container {
-    display:,default;
-}
-
-.text-left {
-    text-align: right;
-}
-
-.text-card {
-    margin: 0 0 0 0;
-    padding-left: 15px;
-    padding-right: 15px;
 }
 
 .main-results-icons {
@@ -615,20 +602,6 @@ input.find-input {
     right: 0;
 }
 
-.centered-text {
-    text-align: center;
-    display: block;
-}
-
-.profile-photo {
-    text-align: center;
-}
-
-.profile-photo img{
-    width:100px;
-    height:100px;
-
-}
 
 .main-results-icons img {
     width:40px;
