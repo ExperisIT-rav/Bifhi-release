@@ -286,7 +286,7 @@ define([
                     return fields[k]['values']
             }
 
-            return 'No value found';
+            return null;
         },
 
         formatResult: function(model, isPromotion) {
@@ -315,7 +315,9 @@ define([
                 contentType: getContentTypeClass(model),
                 thumbnail: model.get('thumbnail'),
                 exp: this.getFieldsResult(model, 'XP_TOT'),
-                index: model.get('index')
+                index: model.get('index'),
+                jobTitle: this.getFieldsResult(model, 'FONCTION'),
+                sourcing: this.getFieldsResult(model, 'SOURCING')
             }));
 
             if (isPromotion) {

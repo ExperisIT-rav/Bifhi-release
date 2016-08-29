@@ -22,7 +22,7 @@ define([
         'app.from': 'From',
         'app.loading': 'Loading...',
         'app.logout': 'Logout',
-        'app.name': 'HPE BI for Human Information RAVVVVVV',
+        'app.name': 'HPE BI for Human Information',
         'app.name.split.firstLine': '',
         'app.name.split.secondLine': '',
         'app.ok': 'OK',
