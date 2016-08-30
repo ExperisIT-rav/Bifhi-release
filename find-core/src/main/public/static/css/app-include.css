@@ -632,7 +632,10 @@ input.find-input {
     margin: 12px 0 15px 0;
     font-family: "Times New Roman", Times, serif;
     font-style: normal;
-    font-size: 50px;
+    color: black;
+    font-weight: bold;
+    font-size: 24px;
+    overflow: hidden;
 }
 
 .profile-photo {

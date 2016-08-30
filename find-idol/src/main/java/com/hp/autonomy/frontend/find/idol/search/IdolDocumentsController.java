@@ -65,51 +65,72 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
             Set<GetContentRequestIndex<String>> getContentRequestIndexSet = null;
             GetContentRequest<String> getContentRequest = null;
             List<IdolSearchResult> partialResultsWithAllFields = null;
-            HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
+//            HashMap<String, HashSet<String>> resultsReference = new HashMap<String, HashSet<String>>();
             HashSet<String> referenceSet = null;
             Documents<IdolSearchResult> completeResults = null;
+            List<String> indexResultsIndex = new ArrayList<String>();
+            List<String> referenceResultsIndex = new ArrayList<String>();
+            String ref = null;
+            String ind = null;
+            getContentRequestIndexSet = new HashSet<GetContentRequestIndex<String>>();
 
             for (IdolSearchResult result : results) {
 
-                if (resultsReference.containsKey(result.getIndex())) {
-                    referenceSet = resultsReference.get(result.getIndex());
-                    resultsReference.remove(result.getIndex());
-                    referenceSet.add(result.getReference());
-                    resultsReference.put(result.getIndex(), referenceSet);
-                } else {
-                    referenceSet = new HashSet<String>();
-                    referenceSet.add(result.getReference());
-                    resultsReference.put(result.getIndex(), referenceSet);
-                }
+                indexResultsIndex.add(result.getIndex());
+                referenceResultsIndex.add(result.getReference());
+
+//                if (resultsReference.containsKey(result.getIndex())) {
+//                    referenceSet = resultsReference.get(result.getIndex());
+//                    resultsReference.remove(result.getIndex());
+//                    referenceSet.add(result.getReference());
+//                    resultsReference.put(result.getIndex(), referenceSet);
+//                } else {
+//                    referenceSet = new HashSet<String>();
+//                    referenceSet.add(result.getReference());
+//                    resultsReference.put(result.getIndex(), referenceSet);
+//                }
             }
 
-            for (String key : resultsReference.keySet()) {
-                getContentRequestIndexSet = new HashSet<GetContentRequestIndex<String>>();
-                for (String reference : resultsReference.get(key)) {
-                    if (reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf")) {
-                        getContentRequestIndexSet.add(new GetContentRequestIndex<>((String) key, Collections.singleton(reference)));
-                    }
-                }
-                getContentRequest = new GetContentRequest<>(getContentRequestIndexSet, PrintParam.All.name());
+//            for (String key : resultsReference.keySet()) {
+//                getContentRequestIndexSet = new HashSet<GetContentRequestIndex<String>>();
+//                for (String reference : resultsReference.get(key)) {
+//                    if (reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf")) {
+//                        getContentRequestIndexSet.add(new GetContentRequestIndex<>((String) key, Collections.singleton(reference)));
+//                    }
+//                }
+//                getContentRequest = new GetContentRequest<>(getContentRequestIndexSet, PrintParam.All.name());
+//
+//                if (partialResultsWithAllFields == null) {
+//                    partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
+//                } else {
+//                    partialResultsWithAllFields.addAll(documentsService.getDocumentContent(getContentRequest));
+//                }
+//            }
 
-                if (partialResultsWithAllFields == null) {
-                    partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
-                } else {
-                    partialResultsWithAllFields.addAll(documentsService.getDocumentContent(getContentRequest));
+            for (int i=0; i<referenceResultsIndex.size(); i++){
+                ref = referenceResultsIndex.get(i);
+                ind = indexResultsIndex.get(i);
+
+                if (ref.endsWith(".docx") || ref.endsWith(".doc") || ref.endsWith(".pdf")) {
+                    getContentRequestIndexSet.add(new GetContentRequestIndex<>(ind, Collections.singleton(ref)));
+                    System.out.println("i = "+i);
                 }
+
+
             }
 
-            ArrayList<String> documentReferenceToRemove = new ArrayList<String>();
+            getContentRequest = new GetContentRequest<>(getContentRequestIndexSet, PrintParam.All.name());
+            partialResultsWithAllFields = documentsService.getDocumentContent(getContentRequest);
+
             for (Iterator<IdolSearchResult> it = partialResultsWithAllFields.iterator(); it.hasNext(); ) {
                 IdolSearchResult document = it.next();
                 String reference = document.getReference();
                 if (!(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf"))) {
-                    documentReferenceToRemove.add(reference);
                     it.remove();
                 }
             }
 
-            completeResults = new Documents<IdolSearchResult>(partialResultsWithAllFields, resultIndex.getTotalResults(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
+            completeResults = new Documents<IdolSearchResult>(partialResultsWithAllFields, partialResultsWithAllFields.size(), resultIndex.getExpandedQuery(), resultIndex.getSuggestion(), resultIndex.getAutoCorrection(), resultIndex.getWarnings());
 
             return completeResults;
         } catch (NullPointerException e) {

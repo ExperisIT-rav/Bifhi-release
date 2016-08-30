@@ -14,17 +14,17 @@
             </span>
         <% } %>
         <h3 class="profile-photo"><img src="../img/person.png"></h3>
-        <h4 class="m-b-nil m-t-xs result-header text-card text-center title-card"><%- title %></h4>
-        <p class="text-card">Recuperated:  <%- date %></p>
-        <!--<span class="document-reference shorten"><%-reference %></span>-->
-        <p class="text-card">Experience: <%= exp %></p>
-        <p class="text-card">Source: <%= index %></p>
+        <h3 class="m-b-nil m-t-xs result-header text-card text-center title-card"><%- title %></h3>
         <% if (jobTitleShow) { %>
-            <p class="text-card">Job Title: <%= jobTitle %></p>
+        <h4 class="text-card">Job Title: <%= jobTitle %></h4>
         <% } %>
+        <!--<span class="document-reference shorten"><%-reference %></span>-->
+        <h4 class="text-card">Experience: <%= exp %></h4>
+        <p class="text-card">Source: <%= index %></p>
         <% if (sourcingShow) { %>
             <p class="text-card">Sourcing: <%= sourcing %></p>
         <% } %>
+        <p class="text-card">Recuperated:  <%- date %></p>
         <!--<p class="text-card"><%= summary %></p>-->
         <p class="text-right main-results-icons">
             <!-- <a class="similar-documents-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarDocuments']%></a> -->
