@@ -47,13 +47,19 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
                               @RequestParam(value = RESULTS_START_PARAM, defaultValue = "1") final int resultsStart,
                               @RequestParam(MAX_RESULTS_PARAM) final int maxResults,
                               @RequestParam(SUMMARY_PARAM) final String summary,
-                              @RequestParam(INDEXES_PARAM) final List<String> index,
+                              @RequestParam(value = INDEXES_PARAM, required = false) final List<String> index,
                               @RequestParam(value = FIELD_TEXT_PARAM, defaultValue = "") final String fieldText,
                               @RequestParam(value = SORT_PARAM, required = false) final String sort,
                               @RequestParam(value = MIN_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime minDate,
                               @RequestParam(value = MAX_DATE_PARAM, required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final DateTime maxDate,
                               @RequestParam(value = HIGHLIGHT_PARAM, defaultValue = "false") final boolean highlight,
                               @RequestParam(value = AUTO_CORRECT_PARAM, defaultValue = "false") final boolean autoCorrect) throws AciErrorException {
+
+        if(index == null) {
+            return new Documents<IdolSearchResult>(new ArrayList<IdolSearchResult>(), 0, null, null, null, null);
+        }
+
+
         final SearchRequest<String> searchRequest = parseRequestParamsToObject(text, resultsStart, maxResults, summary, index, fieldText, sort, minDate, maxDate, highlight, autoCorrect);
 
         // Get all results as index (not with all the field values)
@@ -78,6 +84,7 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
 
                 indexResultsIndex.add(result.getIndex());
                 referenceResultsIndex.add(result.getReference());
+//                System.out.println("index = "+result.getIndex());
 
 //                if (resultsReference.containsKey(result.getIndex())) {
 //                    referenceSet = resultsReference.get(result.getIndex());
@@ -113,7 +120,6 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
 
                 if (ref.endsWith(".docx") || ref.endsWith(".doc") || ref.endsWith(".pdf")) {
                     getContentRequestIndexSet.add(new GetContentRequestIndex<>(ind, Collections.singleton(ref)));
-                    System.out.println("i = "+i);
                 }
 
 

@@ -16,7 +16,7 @@
         <h3 class="profile-photo"><img src="../img/person.png"></h3>
         <h3 class="m-b-nil m-t-xs result-header text-card text-center title-card"><%- title %></h3>
         <% if (jobTitleShow) { %>
-        <h4 class="text-card">Job Title: <%= jobTitle %></h4>
+        <h4 class="text-card"><%= jobTitle %></h4>
         <% } %>
         <!--<span class="document-reference shorten"><%-reference %></span>-->
         <h4 class="text-card">Experience: <%= exp %></h4>
@@ -28,7 +28,7 @@
         <!--<p class="text-card"><%= summary %></p>-->
         <p class="text-right main-results-icons">
             <!-- <a class="similar-documents-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarDocuments']%></a> -->
-            <a class="similar-documents-trigger result-container-control" role="button" tabindex="-1"><img src="../img/Startup-Icons_list.png"></a>
+            <!--<a class="similar-documents-trigger result-container-control" role="button" tabindex="-1"><img src="../img/Startup-Icons_list.png"></a>-->
             <!-- <a class="similar-cv-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarCv']%></a> -->
             <a class="similar-cvs-trigger result-container-control" role="button" tabindex="-1"><img src="../img/Startup-Icons_identiti-document.png"></a>
             <!-- <a class="similar-offers-trigger result-container-control" role="button" tabindex="-1"><%-i18n['search.similarOffers']%></a> -->

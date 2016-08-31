@@ -366,6 +366,9 @@ define([
                 reference: targetDocument.get('reference')
             });
 
+//            console.log("All = ");
+//            console.log(collection);
+
 //            console.log("queryModel = ");
 //            console.log(this.queryModel);
 
@@ -402,13 +405,36 @@ define([
             });
         },
 
+        getFullListIndexIfEmpty: function(array) {
+
+            console.log(array.length);
+
+            if(array.length < 1){
+                return ['News', 'Archive', 'CV', 'Freelance', 'Recrutement', 'Soustraitant'];
+            }
+
+            return array;
+        },
+
+        removeValueFromArray: function(array, valueToRemove) {
+            var index = array.indexOf(valueToRemove);
+
+            if (index > -1) {
+                array.splice(index, 1);
+            }
+            return array;
+        },
+
         handlePopoverCvs: function($content, $target) {
             var targetDocument = this.documentsCollection.get($target.closest('[data-cid]').data('cid'));
 
             var collection = new SimilarDocumentsCollection([], {
-                indexes: this.queryModel.get('indexes')[2],
+                indexes: this.getFullListIndexIfEmpty(this.removeValueFromArray(this.queryModel.get('indexes'), 'Offres')),
                 reference: targetDocument.get('reference')
             });
+
+//            console.log("CV = ");
+//            console.log(collection);
 
             collection.fetch({
                 error: _.bind(function() {
@@ -445,9 +471,12 @@ define([
             var targetDocument = this.documentsCollection.get($target.closest('[data-cid]').data('cid'));
 
             var collection = new SimilarDocumentsCollection([], {
-                indexes: this.queryModel.get('indexes')[3],
+                indexes: ['Offres'],
                 reference: targetDocument.get('reference')
             });
+
+//            console.log("Offres = ");
+//            console.log(collection);
 
             collection.fetch({
                 error: _.bind(function() {
