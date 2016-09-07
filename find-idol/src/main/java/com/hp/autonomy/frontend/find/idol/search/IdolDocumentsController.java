@@ -115,10 +115,10 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
 //            }
 
             for (int i=0; i<referenceResultsIndex.size(); i++){
-                ref = referenceResultsIndex.get(i);
+                ref = referenceResultsIndex.get(i).toLowerCase();
                 ind = indexResultsIndex.get(i);
 
-                if (ref.endsWith(".docx") || ref.endsWith(".doc") || ref.endsWith(".pdf")) {
+                if (ref .endsWith(".docx") || ref.endsWith(".doc") || ref.endsWith(".pdf")) {
                     getContentRequestIndexSet.add(new GetContentRequestIndex<>(ind, Collections.singleton(ref)));
                 }
 
@@ -130,7 +130,7 @@ public class IdolDocumentsController extends DocumentsController<String, IdolSea
 
             for (Iterator<IdolSearchResult> it = partialResultsWithAllFields.iterator(); it.hasNext(); ) {
                 IdolSearchResult document = it.next();
-                String reference = document.getReference();
+                String reference = document.getReference().toLowerCase();
                 if (!(reference.endsWith(".docx") || reference.endsWith(".doc") || reference.endsWith(".pdf"))) {
                     it.remove();
                 }
